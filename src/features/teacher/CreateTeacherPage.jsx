@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { createTeacher } from "./teacherService";
 import { toast } from "react-toastify";
 import { useLocation, useNavigate } from "react-router-dom";
-import { signIn } from "../auth/authService";
 import "../../styles/AuthForm.css";
 
 const CreateTeacherPage = () => {
@@ -29,10 +28,9 @@ const CreateTeacherPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await createTeacher(formData);
+      const response = await createTeacher(formData);
+      localStorage.setItem("user", JSON.stringify(response.data));
       toast.success("Teacher profile created successfully!");
-      const response = await signIn(phoneNumber, password);
-      localStorage.setItem("token", response.token);
       navigate("/dashboard");
     } catch (error) {
       console.error(error.response?.data || error.message);

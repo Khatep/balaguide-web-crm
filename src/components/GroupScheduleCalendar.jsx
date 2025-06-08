@@ -1,3 +1,4 @@
+// src/components/GroupScheduleCalendar.jsx
 import React, { useEffect, useState } from "react";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import format from "date-fns/format";

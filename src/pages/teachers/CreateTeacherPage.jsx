@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import "./CreateTeacherPage.css";
+import {toast} from "react-toastify";
 
 const CreateTeacherPage = () => {
   const [formData, setFormData] = useState({
@@ -38,7 +39,7 @@ const CreateTeacherPage = () => {
           },
         }
       );
-      alert("Teacher created successfully!");
+      toast.success("Teacher created successfully!");
       setFormData({
         firstName: "",
         lastName: "",
@@ -50,7 +51,7 @@ const CreateTeacherPage = () => {
       });
     } catch (err) {
       console.error("Error creating teacher", err);
-      alert("Failed to create teacher.");
+      toast.error("Failed to create teacher.");
     } finally {
       setLoading(false);
     }

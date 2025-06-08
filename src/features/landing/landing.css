@@ -1,3 +1,4 @@
+/* src/features/landing/landing.css
 /* Top Navbar */
 .landing-hero,
 .landing-features,
@@ -68,7 +69,7 @@
   display: flex;
   flex-direction: column;
   background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.5)),
-    url("../../assets/hero-background.png");
+  url("../../assets/hero-background.png");
   background-size: cover;
   background-position: center;
 }

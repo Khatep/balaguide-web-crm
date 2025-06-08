@@ -1,9 +1,10 @@
 // src/features/teacher/teacherService.js
-import axios from "axios";
+import axios from "../../utils/axiosInstance";
 import { authHeader } from "../../utils/authHeader";
 import { getToken } from "../../utils/storage";
-const API_URL = "http://balaguide.netbird.cloud:8081/api/v1/teachers";
+import {API_BASE_URL_NETBIRD, API_BASE_URL_LOCAL} from "../../config/api";
 
+const API_URL = `${API_BASE_URL_NETBIRD}/api/v1/teachers`;
 export const createTeacher = async (teacherData) => {
   const token = getToken();
 

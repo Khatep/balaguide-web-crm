@@ -1,5 +1,6 @@
+// src/features/SignInPage.jsx
 import React, { useState } from "react";
-import { signIn } from "./authService";
+import { signIn } from "./AuthService";
 import { useNavigate } from "react-router-dom";
 import "./AuthPages.css";
 import { toast } from "react-toastify";
@@ -20,18 +21,18 @@ const SignInPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true); // Start loading
+
     try {
       const response = await signIn(phoneNumber, password);
-      localStorage.setItem("token", response.token);
-      localStorage.setItem("role", response.user.role); // ✅ Save role here
+      console.warn(response);
+      console.warn(response.jwtResponseDto.token);
+      localStorage.setItem("token", response.jwtResponseDto.token);
+      localStorage.setItem("role", response.user.authUser.role);
+      localStorage.setItem("user", JSON.stringify(response.user));
       navigate("/dashboard");
     } catch (err) {
-      localStorage.setItem("token", "1234567890");
-      localStorage.setItem("role", "EDUCATION CENTER");
       console.error("Error data:", err.response?.data);
-      toast.error(
-        "Login failed: " + err.response?.data?.message || "Unknown error"
-      );
+      toast.error("Login failed: " + err.response?.data?.message || "Unknown error");
       setIsShaking(true);
       setTimeout(() => setIsShaking(false), 500);
     } finally {

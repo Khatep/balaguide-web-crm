@@ -1,3 +1,4 @@
+// src/pages/teachers/ScanAttendancePage.jsx
 import React, { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import axios from "axios";

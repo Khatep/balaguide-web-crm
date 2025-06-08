@@ -1,75 +1,73 @@
-// src/pages/GroupsPage.jsx
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import "./GroupsPage.css";
-import { useNavigate } from "react-router-dom";
+"use client"
+
+import { useState, useMemo } from "react"
+import { useGroups } from "./useGroups"
+import GroupsHeader from "./GroupsHeader"
+import GroupsGrid from "./GroupsGrid"
+import CreateGroupModal from "./CreateGroupModal"
+import "./GroupsPage.css"
 
 const GroupsPage = () => {
-  const [groups, setGroups] = useState([]);
-  const navigate = useNavigate();
+    const [showModal, setShowModal] = useState(false)
+    const [searchTerm, setSearchTerm] = useState("")
+    const [filterStatus, setFilterStatus] = useState("all")
 
-  useEffect(() => {
-    const fetchGroups = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const res = await axios.get("/api/v1/groups", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setGroups(res.data);
-      } catch (error) {
-        console.error("Error fetching groups:", error);
-      }
-    };
+    const { groups, loading, error } = useGroups(showModal)
 
-    fetchGroups();
-  }, []);
+    const filteredGroups = useMemo(() => {
+        let filtered = groups.filter(
+            (group) =>
+                group.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                group.language.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                group.course?.name?.toLowerCase().includes(searchTerm.toLowerCase()),
+        )
 
-  return (
-    <div className="groups-page-container">
-      <h2 className="groups-page-title">All Groups</h2>
-      <div className="groups-page-actions">
-        <button
-          className="groups-create-button"
-          onClick={() => navigate("/create-group")}
-        >
-          ➕ Create Group
-        </button>
-      </div>
+        switch (filterStatus) {
+            case "active":
+                filtered = filtered.filter((group) => !group.groupFull && group.currentParticipants > 0)
+                break
+            case "full":
+                filtered = filtered.filter((group) => group.groupFull)
+                break
+            case "empty":
+                filtered = filtered.filter((group) => group.currentParticipants === 0)
+                break
+            default:
+                break
+        }
 
-      <div className="groups-list">
-        {groups.map((group) => (
-          <div key={group.id} className="group-card">
-            <h3 className="group-name">{group.name}</h3>
-            <p>Language: {group.language}</p>
-            <p>
-              Participants: {group.currentParticipants} /{" "}
-              {group.maxParticipants}
-            </p>
-            <p>Start Date: {group.startEducationDate?.split("T")[0]}</p>
-            <p>Course ID: {group.course}</p>
-            <p>Teacher ID: {group.teacher}</p>
-            {group.groupFull && (
-              <p className="group-full-flag">⚠ Group is full</p>
-            )}
-            <button
-              className="group-lessons-button"
-              onClick={() => navigate(`/groups/${group.id}/lessons`)}
-            >
-              📚 View Lessons
-            </button>
-            <button
-              className="group-details-button"
-              onClick={() => navigate(`/groups/${group.id}`)}
-            >
-              Group Details
-            </button>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
+        return filtered
+    }, [groups, searchTerm, filterStatus])
 
-export default GroupsPage;
+    const handleCreateGroup = () => {
+        setShowModal(true)
+    }
+
+    const handleModalClose = () => {
+        setShowModal(false)
+    }
+
+    const handleGroupCreated = () => {
+        // Trigger refetch by toggling modal state
+        setShowModal(false)
+    }
+
+    return (
+        <div className="groups-page">
+            <GroupsHeader
+                onCreateGroup={handleCreateGroup}
+                searchTerm={searchTerm}
+                onSearchChange={setSearchTerm}
+                filterStatus={filterStatus}
+                onFilterChange={setFilterStatus}
+                groupsCount={filteredGroups.length}
+            />
+
+            <GroupsGrid groups={filteredGroups} loading={loading} error={error} />
+
+            <CreateGroupModal isOpen={showModal} onClose={handleModalClose} onSuccess={handleGroupCreated} />
+        </div>
+    )
+}
+
+export default GroupsPage

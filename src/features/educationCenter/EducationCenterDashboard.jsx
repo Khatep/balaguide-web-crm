@@ -1,3 +1,4 @@
+// src/features/center/EducationCenterDashboard.jsx
 import { useEffect, useState } from "react";
 import { getAllCourses } from "../../features/course/courseService";
 
